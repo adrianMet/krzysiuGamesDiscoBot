@@ -47,12 +47,11 @@ def get_summ_info_by_puuid(puuid, match_data):
     for i in participants:
         if i.puuid == puuid:
             return i
-# def get_summ_metadata_by_puuid(puuid, match_data):
-#     data = json.loads(match_data, object_hook=lambda d: Namespace(**d))
-#     metadata = data.metadata.participants
-#     for i in metadata:
-#         if i == puuid:
-#             return data.metadata
+def get_queueid_match(match_data):
+    data = json.loads(match_data, object_hook=lambda d: Namespace(**d))
+    info = data.info
+    return info
+
 def calculate_winration(win_lose_list):
     win = 0
     lose = 0
@@ -69,12 +68,18 @@ def calculate_kda(kill, death, assists):
         temp_kda = (k + a) / d
         kda.append(temp_kda)
     final_kda = sum(kda) / len(kda)
-    return final_kda
+    return round(final_kda, 2)
+def get_how_much_matches(matches_list):
+    if len(matches_list) <= 1:
+        return f'dzisiaj krzysiu rozgrał {len(matches_list)} mecz'
+    elif len(matches_list) > 1:
+        return f'dzisiaj krzysiu rozegrał {len(matches_list)} meczy'
 def get_match_data(match_ids, api_key):
     match_data_wins = []
     match_data_kills = []
     match_data_assists = []
     match_data_deaths = []
+    queue_ids = []
     for match in match_ids:
         api_url = f'{matches_api_url}{match}/?api_key={api_key}'
         response = requests.get(api_url)
@@ -85,11 +90,15 @@ def get_match_data(match_ids, api_key):
         match_data_kills.append(extracted_summ_info.kills)
         match_data_assists.append(extracted_summ_info.assists)
         match_data_deaths.append(extracted_summ_info.deaths)
+        extracted_match_info = get_queueid_match(data)
+        queue_ids.append(extracted_match_info.queueId)
+    print(get_how_much_matches(match_ids))
     print(calculate_winration(match_data_wins))
     print(f'kda dla ostatnich meczy wynosi: {calculate_kda(match_data_kills, match_data_deaths, match_data_assists)}')
+    print(queue_ids)
 
 
 match_data = get_match_data(match_ids, api_key)
 
 match_data
-print(puuid)
+
