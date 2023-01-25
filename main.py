@@ -19,7 +19,8 @@ def get_today_timestamp():
 
     timestamp = int(today_at_00.timestamp())
     return timestamp
-timestamp = get_today_timestamp()
+# timestamp = get_today_timestamp()
+timestamp = ''
 
 def get_summoner_puuid_by_name(name, api_key, summoner_api_url):
     api_url = f'{summoner_api_url}by-name/{name}?api_key={api_key}'
@@ -67,13 +68,32 @@ def calculate_kda(kill, death, assists):
     for k, d, a in zip(kill, death, assists):
         temp_kda = (k + a) / d
         kda.append(temp_kda)
-    final_kda = sum(kda) / len(kda)
-    return round(final_kda, 2)
+    if len(kda) < 1:
+        return 'nie były grane meczyki, serce jeszcze ma szanse'
+    else:
+        final_kda = sum(kda) / len(kda)
+        return round(final_kda, 2)
 def get_how_much_matches(matches_list):
     if len(matches_list) <= 1:
         return f'dzisiaj krzysiu rozgrał {len(matches_list)} mecz'
     elif len(matches_list) > 1:
         return f'dzisiaj krzysiu rozegrał {len(matches_list)} meczy'
+
+def get_gamemodes_played(game_modes_id):
+    aram = 0
+    normal = 0
+    solo_duo = 0
+    flex = 0
+    for mode in game_modes_id:
+        if mode == 450:
+            aram += 1
+        elif mode == 430 or mode == 400:
+            normal += 1
+        elif mode == 440:
+            flex += 1
+        elif mode == 420:
+            solo_duo += 1
+    return f'krzysztof grał tryby aram: {aram}, normal: {normal}, solo duo: {solo_duo}, flexy: {flex}'
 def get_match_data(match_ids, api_key):
     match_data_wins = []
     match_data_kills = []
@@ -95,7 +115,7 @@ def get_match_data(match_ids, api_key):
     print(get_how_much_matches(match_ids))
     print(calculate_winration(match_data_wins))
     print(f'kda dla ostatnich meczy wynosi: {calculate_kda(match_data_kills, match_data_deaths, match_data_assists)}')
-    print(queue_ids)
+    print(get_gamemodes_played(queue_ids))
 
 
 match_data = get_match_data(match_ids, api_key)
