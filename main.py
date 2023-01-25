@@ -7,7 +7,7 @@ except ImportError:
     # Python 2.x fallback
     from argparse import Namespace
 
-summoner_name = 'Psycho93PL'
+summoner_name = input('dawaj nick przywoływacza szpiegu\n')
 api_key = 'RGAPI-1273b844-609c-4210-91fa-2b04a589c024'
 summoner_api_url = 'https://eun1.api.riotgames.com/lol/summoner/v4/summoners/'
 matches_api_url = 'https://europe.api.riotgames.com/lol/match/v5/matches/'
@@ -61,7 +61,12 @@ def calculate_winration(win_lose_list):
             win += 1
         else:
             lose += 1
-    return f'win ratio dla ostatnich meczy(win/lose): {win}/{lose}'
+    if win < lose:
+        return f'{win}/{lose}(win/lose) masne win ratio, musiało być fajnie'
+    elif win > lose:
+        return f'{win}/{lose}(win/lose) silny przywoływacz, dodatnie win ratio, może zapalić lufke w nagrodę'
+    elif win == lose:
+        return f'{win}/{lose}(win/lose), szału nie ma dupy nie urywa'
 def calculate_kda(kill, death, assists):
     kda = []
     i = 0
@@ -75,9 +80,15 @@ def calculate_kda(kill, death, assists):
         return round(final_kda, 2)
 def get_how_much_matches(matches_list):
     if len(matches_list) <= 1:
-        return f'dzisiaj krzysiu rozgrał {len(matches_list)} mecz'
+        if summoner_name == 'Psycho93PL':
+            return f'dzisiaj szurson rozgrał {len(matches_list)} mecz'
+        else:
+            return f'dzisiaj {summoner_name} rozgrał {len(matches_list)} mecz'
     elif len(matches_list) > 1:
-        return f'dzisiaj krzysiu rozegrał {len(matches_list)} meczy'
+        if summoner_name == 'Psycho93PL':
+            return f'dzisiaj szurson rozegrał {len(matches_list)} meczy'
+        else:
+            return f'dzisiaj {summoner_name} rozegrał {len(matches_list)} meczy'
 
 def get_gamemodes_played(game_modes_id):
     aram = 0
@@ -93,7 +104,10 @@ def get_gamemodes_played(game_modes_id):
             flex += 1
         elif mode == 420:
             solo_duo += 1
-    return f'krzysztof grał tryby aram: {aram}, normal: {normal}, solo duo: {solo_duo}, flexy: {flex}'
+    if summoner_name == 'Psycho93PL':
+        return f'szurson grał tryby: aram - {aram}, normal - {normal}, solo duo - {solo_duo}, flexy - {flex}'
+    else:
+        return f'{summoner_name} grał tryby: aram - {aram}, normal - {normal}, solo duo - {solo_duo}, flexy - {flex}'
 def get_match_data(match_ids, api_key):
     match_data_wins = []
     match_data_kills = []
